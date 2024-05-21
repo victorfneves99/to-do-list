@@ -44,6 +44,13 @@
   background-color: #3183ff;
   padding: 12px 0;
   font-size: 18px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #04aa6d;
+  color: white;
 }
 
 .taskContainer {
