@@ -3,10 +3,18 @@ import { Inter } from "next/font/google";
 import styles from "../../src/styles/home.module.css";
 import Image from "next/image";
 import heroImg from "../../public/assets/hero.png";
+import { GetServerSideProps, GetStaticProps } from "next";
+import { collection, getCountFromServer, getDocs } from "firebase/firestore";
+import { db } from "../services/firebaseConnection";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+interface HomeProps {
+  posts: number;
+  comments: number;
+}
+
+export default function Home({ posts, comments }: HomeProps) {
   return (
     <div className={styles.container}>
       <Head>
@@ -32,13 +40,30 @@ export default function Home() {
 
         <div className={styles.infoContent}>
           <section className={styles.box}>
-            <span>+12 posts</span>
+            <span>+{posts} posts</span>
           </section>
           <section className={styles.box}>
-            <span>+90 comentarios</span>
+            <span>+{comments} comentarios</span>
           </section>
         </div>
       </main>
     </div>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const commentRef = collection(db, "comments");
+
+  const postRef = collection(db, "tarefas");
+
+  const commentSnapshot = await getCountFromServer(commentRef);
+  const postSnapshot = await getCountFromServer(postRef);
+
+  return {
+    props: {
+      posts: postSnapshot.data().count,
+      comments: commentSnapshot.data().count,
+    },
+    revalidate: 60,
+  };
+};
